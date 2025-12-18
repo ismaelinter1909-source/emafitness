@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel IMC — EmaFitness</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b8043">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<style>
+:root{
+  --primary:#0b8043;
+  --accent:#ffb703;
+  --bg:#f7f7f9;
+  --muted:#6b7280;
+  --card:#ffffff;
+}
+
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:var(--bg);color:#111;min-height:100vh}
+
+/* LOGO */
+#top-header{
+  display:flex;
+  justify-content:center;
+  margin:18px 0;
+}
+.logo-topo{
+  width:160px;
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+@media(max-width:480px){
+  .logo-topo{width:120px}
+}
+
+/* LAYOUT */
+.main{padding:18px;max-width:1100px;margin:auto}
+
+/* CARD COLAPSÁVEL */
+.card{
+  background:var(--card);
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  margin-bottom:16px;
+  overflow:hidden;
+}
+
+.card-header{
+  padding:14px 16px;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#f1f5f3;
+}
+
+.card-header h3{
+  margin:0;
+  color:var(--primary);
+  font-size:16px;
+}
+
+.card-header span{
+  font-size:18px;
+  transition:transform .3s;
+}
+
+.card.open .card-header span{
+  transform:rotate(180deg);
+}
+
+.card-content{
+  padding:16px;
+  display:none;
+}
+
+.card.open .card-content{
+  display:block;
+}
+
+/* FORM / LIST */
+label{display:block;margin-top:8px;font-size:13px}
+input{
+  width:100%;
+  padding:8px;
+  margin-top:4px;
+  border-radius:6px;
+  border:1px solid #ddd;
+}
+button{
+  margin-top:10px;
+  padding:8px 14px;
+  border:0;
+  border-radius:8px;
+  background:var(--primary);
+  color:#fff;
+  cursor:pointer;
+}
+.list{
+  margin-top:8px;
+  padding:8px;
+  border:1px dashed #ddd;
+  border-radius:8px;
+  max-height:160px;
+  overflow:auto;
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<header id="top-header">
+  <img src="img/Logo.emafitness.jpg" class="logo-topo" alt="EmaFitness">
+</header>
+
+<main class="main">
+
+  <!-- IMC -->
+  <section class="card">
+    <div class="card-header">
+      <h3>📊 Resumo IMC</h3>
+      <span>▼</span>
+    </div>
+    <div class="card-content">
+      <div id="resultado"></div>
+      <canvas id="pesoChart" height="140"></canvas>
+    </div>
+  </section>
+
+  <!-- PESO -->
+  <section class="card">
+    <div class="card-header">
+      <h3>⚖️ Registro de Peso</h3>
+      <span>▼</span>
+    </div>
+    <div class="card-content">
+      <form id="formPeso">
+        <label>Data</label>
+        <input type="date" required>
+        <label>Peso (kg)</label>
+        <input type="number" step="0.1" required>
+        <button type="submit">Adicionar</button>
+      </form>
+      <div class="list" id="listaPesos"></div>
+    </div>
+  </section>
+
+  <!-- ATIVIDADES -->
+  <section class="card">
+    <div class="card-header">
+      <h3>🏃 Atividades Físicas</h3>
+      <span>▼</span>
+    </div>
+    <div class="card-content">
+      <form>
+        <label>Data</label>
+        <input type="date">
+        <label>Atividade</label>
+        <input type="text">
+        <label>Duração (min)</label>
+        <input type="number">
+        <button type="button">Adicionar</button>
+      </form>
+      <div class="list" id="listaAtividades"></div>
+    </div>
+  </section>
+
+  <!-- ÁGUA -->
+  <section class="card">
+    <div class="card-header">
+      <h3>💧 Ingestão de Água</h3>
+      <span>▼</span>
+    </div>
+    <div class="card-content">
+      <input type="number" placeholder="Quantidade (ml)">
+      <button type="button">Registrar</button>
+      <div class="list" id="listaAgua"></div>
+    </div>
+  </section>
+
+  <!-- ALIMENTAÇÃO -->
+  <section class="card">
+    <div class="card-header">
+      <h3>🥗 Alimentação</h3>
+      <span>▼</span>
+    </div>
+    <div class="card-content">
+      <input type="text" placeholder="Refeição">
+      <input type="number" placeholder="Calorias">
+      <button type="button">Adicionar</button>
+      <div class="list" id="listaRefeicoes"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- SCRIPT DOS CARDS -->
+<script>
+document.querySelectorAll(".card-header").forEach(header=>{
+  header.addEventListener("click", ()=>{
+    header.parentElement.classList.toggle("open");
+  });
+});
+</script>
+
+<!-- SEU SCRIPT -->
+<script src="proxima.js"></script>
+
+<!-- SERVICE WORKER (PWA) -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(() => console.log("✅ PWA registrado com sucesso"))
+      .catch(err => console.error("❌ Erro no Service Worker:", err));
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login do Usuário</title>
+
+  <!-- CSS embutido (responsivo, acessível, animações) -->
+  <style>
+    /* style (embutido) — login responsivo */
+    :root{
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --primary: #0b8043;   /* verde principal */
+      --accent:  #ffb703;   /* destaque */
+      --muted:   #6b7280;
+      --danger:  #d9534f;
+      --success: #198754;
+      --glass:   rgba(11,128,67,0.06);
+      --radius: 12px;
+      --max-width: 480px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial}
+    body{
+      background: linear-gradient(180deg,#fbfcfd 0%,var(--bg) 100%);
+      display:flex;align-items:center;justify-content:center;padding:24px;color:#111;
+    }
+
+    .page{width:100%;max-width:var(--max-width)}
+    .login-card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+      border:1px solid rgba(15,23,42,0.03);
+      display:flex;flex-direction:column;gap:8px;align-items:center;
+    }
+
+    .logo{width:84px;height:auto;border-radius:8px;object-fit:cover;box-shadow:0 8px 18px var(--glass)}
+    h1{margin:6px 0 0 0;color:var(--primary);font-size:20px}
+    .lead{margin:0 0 10px 0;color:var(--muted);font-size:13px}
+
+    .form-login{width:100%;display:flex;flex-direction:column;gap:10px}
+    .field{width:100%}
+    label{display:block;font-size:13px;color:#222;margin-bottom:6px}
+    input[type="text"],input[type="password"],input[type="email"],input[type="number"],input[type="date"]{
+      width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e6e6e9;background:#fff;font-size:14px;
+      transition:box-shadow .12s,border-color .12s;
+    }
+    input:focus{outline:none;border-color: rgba(11,128,67,0.85);box-shadow:0 10px 22px rgba(11,128,67,0.06)}
+
+    .actions-row{display:flex;justify-content:center}
+    .btn{padding:10px 14px;border-radius:8px;border:0;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
+    .btn.small{padding:8px 10px;font-size:13px}
+    .btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(11,128,67,0.12)}
+    .btn.danger{background:var(--danger);}
+
+    .links{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+    .link-button{background:none;border:0;color:var(--primary);text-decoration:underline;cursor:pointer;padding:0;font:inherit}
+
+    .recover-card{
+      width:100%;margin-top:12px;padding:12px;border-radius:10px;border:1px solid #eef2f6;background:linear-gradient(#fff,#fff);
+      box-shadow:0 8px 20px rgba(15,23,42,0.03);max-height:0;overflow:hidden;opacity:0;transform:translateY(-6px);
+      transition: max-height .36s ease, opacity .28s ease, transform .28s ease, padding .28s ease;
+    }
+    .recover-card.open{max-height:420px;opacity:1;transform:translateY(0);padding:14px}
+    .rec-passbox{margin-top:8px;display:none}
+    .rec-passbox.show{display:block}
+    .rec-msg{margin-top:8px;font-size:13px;color:var(--danger);min-height:18px}
+    .rec-msg.success{color:var(--success)}
+    .rec-msg.info{color:var(--primary)}
+
+    .small{font-size:13px;color:var(--muted)}
+    input[disabled]{opacity:0.7}
+
+    @media (max-width:520px){
+      .login-card{padding:16px;border-radius:14px}
+      .logo{width:68px}
+      h1{font-size:18px}
+      .btn{width:100%}
+      .actions-row{width:100%}
+    }
+
+    :focus{outline:none}
+    :focus-visible{box-shadow:0 0 0 4px rgba(11,128,67,0.12);border-radius:8px}
+
+    /* small shake animation for error feedback */
+    .input-error { animation: shake .38s ease; border-color: var(--danger) !important; }
+    @keyframes shake { 10%{ transform: translateX(-6px);} 30%{transform:translateX(6px);} 50%{transform:translateX(-4px);} 70%{transform:translateX(4px);} 90%{transform:translateX(-2px);} 100%{transform:translateX(0);} }
+  </style>
+</head>
+<body>
+
+  <main class="page">
+    <section class="login-card" role="region" aria-labelledby="loginTitle">
+      <!-- ajuste a src da imagem conforme sua pasta -->
+      <img src="img/Logo.emafitness.jpg" alt="Logo do sistema" class="logo">
+
+      <h1 id="loginTitle">Login do Usuário</h1>
+      <p class="lead">Acesse sua conta</p>
+
+      <form id="formLogin" class="form-login" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="nome">Nome do Usuário</label>
+          <input id="nome" name="nome" type="text" placeholder="Digite seu nome" required>
+        </div>
+
+        <div class="field">
+          <label for="senha">Senha</label>
+          <input id="senha" name="senha" type="password" placeholder="Digite sua senha" required>
+        </div>
+
+        <div class="actions-row">
+          <button type="submit" class="btn">Entrar</button>
+        </div>
+      </form>
+
+      <div class="links" aria-hidden="false">
+        <a id="linkCadastrar" href="cadastro.html">Cadastrar conta</a>
+        <button id="linkEsqueci" class="link-button" aria-expanded="false" aria-controls="recuperacaoBox">Esqueci a senha</button>
+      </div>
+
+      <div id="recuperacaoBox" class="recover-card" aria-hidden="true" role="region" aria-labelledby="recTitle">
+        <h3 id="recTitle">Recuperar senha</h3>
+
+        <label for="recEmail">Email cadastrado</label>
+        <input id="recEmail" type="email" placeholder="seuemail@exemplo.com" autocomplete="email">
+
+        <div class="recover-actions" style="margin-top:8px">
+          <button id="btnVerificarEmail" class="btn small">Verificar email</button>
+        </div>
+
+        <div id="recPassBox" class="rec-passbox">
+          <label for="novaSenha">Nova senha</label>
+          <input id="novaSenha" type="password" placeholder="Digite nova senha">
+
+          <label for="confNovaSenha">Confirmar nova senha</label>
+          <input id="confNovaSenha" type="password" placeholder="Confirme nova senha">
+
+          <div class="recover-actions" style="margin-top:8px;display:flex;gap:8px">
+            <button id="btnAtualizarSenha" class="btn small">Atualizar senha</button>
+            <button id="btnCancelarRec" class="btn small ghost">Cancelar</button>
+          </div>
+        </div>
+
+        <p id="recMsg" class="rec-msg" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mantém o JS externo (login.js) -->
+  <script src="login.js"></script>
+</body>
+</html>
